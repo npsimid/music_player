@@ -406,25 +406,25 @@ def volume(x):
     #Schimbarea imagimii pentru volum meter in functie de nivelul acestuia
     if int(volum_curent)<1:
         volum_meter.config(image=vol0)
-    elif int(volum_curent)>=1 and int(volum_curent)<15:
+    elif int(volum_curent)>=1 and int(volum_curent)<=11:
         volum_meter.config(image=vol1)
-    elif int(volum_curent)>=15 and int(volum_curent)<25:
+    elif int(volum_curent)>=12 and int(volum_curent)<=22:
         volum_meter.config(image=vol2)
-    elif int(volum_curent)>=25 and int(volum_curent)<35:
+    elif int(volum_curent)>=23 and int(volum_curent)<=33:
         volum_meter.config(image=vol3)
-    elif int(volum_curent)>=35 and int(volum_curent)<45:
+    elif int(volum_curent)>=34 and int(volum_curent)<=45:
         volum_meter.config(image=vol4)
-    elif int(volum_curent)>=45 and int(volum_curent)<55:
+    elif int(volum_curent)>=45 and int(volum_curent)<=55:
         volum_meter.config(image=vol5)
-    elif int(volum_curent)>=55 and int(volum_curent)<65:
+    elif int(volum_curent)>=56 and int(volum_curent)<=66:
         volum_meter.config(image=vol6)
-    elif int(volum_curent)>=65 and int(volum_curent)<75:
+    elif int(volum_curent)>=67 and int(volum_curent)<=77:
         volum_meter.config(image=vol7)
-    elif int(volum_curent)>=75 and int(volum_curent)<85:
+    elif int(volum_curent)>=78 and int(volum_curent)<=88:
         volum_meter.config(image=vol8)
-    elif int(volum_curent)>=85 and int(volum_curent)<=99:
+    elif int(volum_curent)>=89 and int(volum_curent)<=99:
         volum_meter.config(image=vol9)
-    else:
+    elif int(volum_curent) > 99:
         volum_meter.config(image=vol10)
 # se creaza o variabila globala care va monitoriza regimul random
 global random_var
