@@ -2,10 +2,26 @@
 import tkinter as tk
 from tkinter import *
 from tkinter import filedialog, messagebox
-from pygame import mixer
 import time
 from mutagen.mp3 import MP3
 import tkinter.ttk as ttk
+import sys, os
+from random import randint
+
+# Crearea unei functii de blocare a printarii in consola (pentru a exclude mesajele de la pygame)
+def blockPrint():
+    sys.stdout = open(os.devnull, 'w')
+
+# Crearea unei functii de deblocare a printarii in consola (dupa ce s-a importat pygame)
+def enablePrint():
+    sys.stdout = sys.__stdout__
+
+# apelarea functie de blocare a printarii
+blockPrint()
+# Importul modulului mixer din biblioteca pygame
+from pygame import mixer
+#apelarea functiei de deblocare a printarii
+enablePrint()
 
 # crearea ferestrei root
 root=tk.Tk()
@@ -56,8 +72,13 @@ def play_time():
         start_bar_label.config(text=conv_lung_song)
         # se afiseaza lungimea cantecului in labelul corespunzator
         stop_bar_label.config(text=conv_lung_song)
-        # se atrece la urmatorul cantec
-        next_song()
+        # se verifica daca este ultimul cantec din lista si daca ete dezactivat regimurile de repetare si amestecare
+        if cantec_list.curselection()[0]+1==cantec_list.size() and repeat_var == False and random_var==False:
+            # se opreste muzica
+            stop_song()
+        else:
+            # se trece la urmatorul cantec
+            next_song()
     # se verifica daca cantecul nu este pe pauza
     elif paused:
         pass
@@ -209,8 +230,6 @@ def stop_song():
     music_bar.config(value=0)
     # oprirea cantecului
     mixer.music.stop()
-    # deselectarea cantecului oprit
-    cantec_list.select_clear(ACTIVE)
     #setarea variabilei de oprire in true
     global  stopped
     stopped=True
@@ -241,11 +260,13 @@ def pause_song():
         mixer.music.pause()
         # se specifica ca cantecul e pe pauza
         paused = True
-
+# se creaza o variabila globala care va specifica regimul random
+global num_random
+num_random= False
 # crearea functiei de trecere la urmatorul cantec
 def next_song():
     """
-    Functia de e trecere la urmatorul cantec
+    Functia de trecere la urmatorul cantec
     """
     # verificare daca playlist-ul nu este gol
     if cantec_list.size() == 0:
@@ -259,12 +280,21 @@ def next_song():
     stop_bar_label.config(text="")
     # Resetarea barei cu muzica
     music_bar.config(value=0)
+    # selectarea unui numar random din numarul cantecelor in playlist
+    number = randint(0, cantec_list.size() - 1)
+    # se formeaza un tuple cu un element ce corespunde numarului random
+    tuple_list=(number,)
     #se cauta daca este vre-un cantec selectat
     try:
-        #vizualizarea numarului de ordine a cantecului selectat
-        next_song =cantec_list.curselection()
-        # incrementarea numarului de ordine
-        next_song = next_song[0]+1
+        # se verifica daca este activata obtiunea random
+        if random_var:
+            # numarul urmatorului cantec va fi random
+            next_song=tuple_list
+        else:
+            #vizualizarea numarului de ordine a cantecului selectat
+            next_song =cantec_list.curselection()
+            # incrementarea numarului de ordine
+            next_song = next_song[0]+1
     # daca nu este nici un cantecul selectat
     except IndexError:
         # se afiseaza mesajul de atentionare
@@ -305,12 +335,28 @@ def previous_song():
     stop_bar_label.config(text="")
     # Resetarea barei cu muzica
     music_bar.config(value=0)
+    # selectarea unui numar random din numarul cantecelor in playlist
+    number = randint(0, cantec_list.size() - 1)
+    # se formeaza un tuple cu un element ce corespunde numarului random
+    tuple_list = (number,)
+    # se verifica daca variabila cu informatie de la checkbox este 1
+    if random_var == 1:
+        # se seteaza regimul random
+        num_random = True
+    else:
+        # se deconecteaza regimul random
+        num_random = False
     # se cauta daca este vre-un cantec selectat
     try:
-        #vizualizarea numarului de ordine a cantecului selectat
-        prev_song =cantec_list.curselection()
-        # incrementarea numarului de ordine
-        prev_song = prev_song[0]-1
+        # se verifica daca este activata obtiunea random
+        if random_var:
+            # numarul urmatorului cantec va fi random
+            prev_song = tuple_list
+        else:
+            #vizualizarea numarului de ordine a cantecului selectat
+            prev_song =cantec_list.curselection()
+            # incrementarea numarului de ordine
+            prev_song = prev_song[0]-1
     # daca nu este nici un cantecul selectat
     except IndexError:
         # se afiseaza mesajul de atentionare
@@ -380,6 +426,49 @@ def volume(x):
         volum_meter.config(image=vol9)
     else:
         volum_meter.config(image=vol10)
+# se creaza o variabila globala care va monitoriza regimul random
+global random_var
+random_var=False
+
+def random_song():
+    """
+        Functia de stabilirea a regimului random
+    """
+    global random_var
+    # se verifica daca nu este regim random
+    if not random_var:
+        # se modifica imaginea butonului random
+        buton_random.config(image=norandom_img)
+        # se include regimul random
+        random_var = True
+    # se verifica daca este regim random
+    elif random_var:
+        # se modifica imaginea butonului random
+        buton_random.config(image=random_img)
+        # se deconecteaza regimul random
+        random_var = False
+
+# se creaza o variabila globala care va monitoriza regimul repeat
+global repeat_var
+repeat_var=False
+
+def repeat_song():
+    """
+        Functia de stabilirea a regimului repeat
+    """
+    global repeat_var
+    # se verifica daca nu este regim repeat
+    if not repeat_var:
+        # se modifica imaginea butonului repeat
+        buton_repeat.config(image=norepeat_img)
+        # se include regimul repeat
+        repeat_var = True
+    # se verifica daca este regim repeat
+    elif repeat_var:
+        # se modifica imaginea butonului repeat
+        buton_repeat.config(image=repeat_img)
+        # se deconecteaza regimul repeat
+        repeat_var = False
 
 # crearea unui cadru de baza
 master_frame=Frame(root, bg="#228B22")
@@ -426,25 +515,33 @@ frame=tk.Frame(master_frame, bg="#228B22")
 frame.grid(row=3, column=0, columnspan=2, pady=20)
 
 #Definirea imaginilor pentru butoane
-previous_img = PhotoImage(file="icons/previous50.png")
-play_img = PhotoImage(file="icons/play50.png")
-pause_img = PhotoImage(file="icons/pause50.png")
-stop_img = PhotoImage(file="icons/stop50.png")
-next_img = PhotoImage(file="icons/next50.png")
+random_img= PhotoImage(file="icons/shuffle30.png")
+norandom_img= PhotoImage(file="icons/noshuffle30.png")
+previous_img = PhotoImage(file="icons/previous40.png")
+play_img = PhotoImage(file="icons/play40.png")
+pause_img = PhotoImage(file="icons/pause40.png")
+stop_img = PhotoImage(file="icons/stop40.png")
+next_img = PhotoImage(file="icons/next40.png")
+repeat_img= PhotoImage(file="icons/reapeat30.png")
+norepeat_img= PhotoImage(file="icons/noreapeat30.png")
 
 # crearea butoanelor de manipulare
+buton_random=tk.Button(frame, image=random_img, borderwidth=0, bg="#228B22", command=random_song)
 buton_anterior=tk.Button(frame, image=previous_img, borderwidth=0, bg="#228B22", command=previous_song)
 buton_play=tk.Button(frame, image=play_img, borderwidth=0, bg="#228B22", command=play_song)
 buton_pauza=tk.Button(frame, image=pause_img, borderwidth=0, bg="#228B22", command=pause_song)
 buton_stop=tk.Button(frame, image=stop_img, borderwidth=0, bg="#228B22", command=stop_song)
 buton_urmator=tk.Button(frame, image=next_img, borderwidth=0, bg="#228B22", command=next_song)
+buton_repeat=tk.Button(frame, image=repeat_img, borderwidth=0, bg="#228B22", command=repeat_song)
 
 # fixarea butoanelor in cadru
-buton_anterior.grid(row=0, column=0, padx=10)
-buton_play.grid(row=0, column=1, padx=10)
-buton_pauza.grid(row=0, column=2, padx=10)
-buton_stop.grid(row=0, column=3, padx=10)
-buton_urmator.grid(row=0, column=4, padx=10)
+buton_random.grid(row=0, column=0, padx=7, sticky=S)
+buton_anterior.grid(row=0, column=1, padx=7)
+buton_play.grid(row=0, column=2, padx=7)
+buton_pauza.grid(row=0, column=3, padx=7)
+buton_stop.grid(row=0, column=4, padx=7)
+buton_urmator.grid(row=0, column=5, padx=7)
+buton_repeat.grid(row=0, column=6, padx=7, sticky=S)
 
 # crearea meniului
 meniu=Menu(root)
@@ -475,10 +572,10 @@ status_bar.pack(fill=X, side=BOTTOM, ipady=2)
 
 # Crearea unui label in care se va afla bara de volum
 volum_frame=LabelFrame(master_frame, text='Volum', bg="#228B22", fg='white')
-volum_frame.grid(row=1, column=2, rowspan=4, sticky=N, padx=20)
+volum_frame.grid(row=1, column=2, sticky=N, rowspan=4, padx=20)
 
 #Crearea barei de volum
-volum_slider=ttk.Scale(volum_frame, from_=1, to=0, orient=VERTICAL, length=296, value=0.5, command=volume)
+volum_slider=ttk.Scale(volum_frame, from_=1, to=0, orient=VERTICAL, length=286, value=0.5, command=volume)
 volum_slider.pack(pady=0)
 
 # crearea buclei de afisare permanenta
