@@ -104,7 +104,6 @@ def play_time():
         music_bar.config(value=next_time)
     # actualizarea timpului
     status_bar.after(1000, play_time)
-
 # crearea functiei de adaugare a unui cantec in playlist
 def add_song():
     """
@@ -124,6 +123,18 @@ def add_song():
     cantec_list.insert(END,songs1)
     # se activeaza primul cantec din lista
     cantec_list.selection_set(0)
+    # se verifica daca sunt mai mult de 10 cantece
+    if cantec_list.size() > 10:
+        # se reduce latimea playlist-ului
+        cantec_list.config(width=56)
+        # se plaseaza playlistul doar pe 2 coloane
+        cantec_list.grid(row=4, column=0, columnspan=2, pady=10, sticky=E)
+        # se fixeaza scrollbarul in celula eliberata de playlist
+        scrollbar.grid(row=4, column=2, sticky="nsw", pady=10)
+        # se ataseza scrollbarul la playlist
+        cantec_list.config(yscrollcommand=scrollbar.set)
+        # se configuraza scrollbarul sa urmareasca lungimea playlistului
+        scrollbar.config(command=cantec_list.yview)
 
 # crearea functiei de adaugare mai multor cantece in playlist
 def add_songs():
@@ -148,6 +159,21 @@ def add_songs():
         cantec_list.insert(END,songs1)
         # se activeaza primul cantec din lista
         cantec_list.selection_set(0)
+    # se verifica daca sunt mai mult de 10 cantece
+    if cantec_list.size() > 10:
+        # se reduce latimea playlist-ului
+        cantec_list.config (width = 56)
+        # se plaseaza playlistul doar pe 2 coloane
+        cantec_list.grid(row=4, column=0, columnspan=2, pady=10, sticky=E)
+        # se creaza crollbar-ul
+        global scrollbar
+        scrollbar = Scrollbar(master_frame)
+        # se fixeaza scrollbarul in celula eliberata de playlist
+        scrollbar.grid(row=4, column=2, sticky="nsw", pady=10)
+        # se ataseza scrollbarul la playlist
+        cantec_list.config(yscrollcommand=scrollbar.set)
+        # se configuraza scrollbarul sa urmareasca lungimea playlistului
+        scrollbar.config(command=cantec_list.yview)
 
 def del_song():
     """
@@ -161,7 +187,14 @@ def del_song():
         messagebox.showinfo(title='Informație', message="Nu ați incarcat nici un cântec")
     # stergerea cantecului selectat
     cantec_list.delete(ANCHOR)
-
+    # se verifica daca au ramas mai putin de 10 cantece
+    if cantec_list.size() <= 10 and scrollbar.winfo_exists():
+        # se distruge srollbar-ul
+        scrollbar.destroy()
+        # se extinte latimea playlistului
+        cantec_list.config(width=60)
+        # se plaseaza playlistul pe 3 coloane
+        cantec_list.grid(row=4, column=0, columnspan=3, pady=10, sticky=E)
 
 def del_songs():
     """
@@ -171,6 +204,14 @@ def del_songs():
     stop_song()
     # stergerea tuturor cantecelor
     cantec_list.delete(0,END)
+    # se verifica daca exista crollbar-ul
+    if scrollbar.winfo_exists():
+        # se distruge srollbar-ul
+        scrollbar.destroy()
+        # se extinte latimea playlistului
+        cantec_list.config(width=60)
+        # se plaseaza playlistul pe 3 coloane
+        cantec_list.grid(row=4, column=0, columnspan=3, pady=10, sticky=E)
 
 # crearea functiei de pornirea cantecului selectat
 def play_song():
@@ -475,10 +516,12 @@ master_frame=Frame(root, bg="#228B22")
 #fixarea cadrului de baza
 master_frame.pack()
 
+scrollbar = Scrollbar(master_frame)
+
 # crearea cadrului pentru playlist
 cantec_list=tk.Listbox(master_frame, width=60, bg="#9ACD32", fg="#0000FF", selectbackground='#B22222', activestyle=None)
 #fixarea cadrului cu playlist in fereastra
-cantec_list.grid(row=4, column=0, columnspan=2, pady=10)
+cantec_list.grid(row=4, column=0, columnspan=3, pady=10, sticky=E)
 
 # definirea imaginilor pentru volum meter
 vol0=PhotoImage(file="icons/vol0.png")
@@ -495,7 +538,7 @@ vol10=PhotoImage(file="icons/vol10.png")
 
 #Crearea label pentru meter
 volum_meter = Label(master_frame, image=vol5)
-volum_meter.grid(row=0, column=0, columnspan=3, pady=20)
+volum_meter.grid(row=0, column=0, columnspan=4, pady=20)
 
 # Label pentru afisarea timpului curent pe bara de muzica
 start_bar_label=Label(master_frame, text='00:00:00', bg="#228B22", fg='white')
@@ -503,16 +546,16 @@ start_bar_label.grid(row=1, column=0, sticky=W)
 
 # Label pentru afisarea timpului final pe bara de muzica
 stop_bar_label=Label(master_frame, text='', bg="#228B22", fg='white')
-stop_bar_label.grid(row=1, column=1, sticky=E)
+stop_bar_label.grid(row=1, column=1, columnspan=2, sticky=E)
 
 # crearea barei cu pozitia muzicii
 music_bar=ttk.Scale(master_frame, from_=0, to=100, orient=HORIZONTAL, length=360, value=0, command=bar_song)
-music_bar.grid(row=2, column=0, columnspan=2)
+music_bar.grid(row=2, column=0, columnspan=3)
 
 # crearea cadrului pentru butoane
 frame=tk.Frame(master_frame, bg="#228B22")
 #fixarea cadrului pentru butoanele de manipulare
-frame.grid(row=3, column=0, columnspan=2, pady=20)
+frame.grid(row=3, column=0, columnspan=3, pady=20)
 
 #Definirea imaginilor pentru butoane
 random_img= PhotoImage(file="icons/shuffle30.png")
@@ -572,7 +615,7 @@ status_bar.pack(fill=X, side=BOTTOM, ipady=2)
 
 # Crearea unui label in care se va afla bara de volum
 volum_frame=LabelFrame(master_frame, text='Volum', bg="#228B22", fg='white')
-volum_frame.grid(row=1, column=2, sticky=N, rowspan=4, padx=20)
+volum_frame.grid(row=1, column=3, sticky=N, rowspan=4, padx=20)
 
 #Crearea barei de volum
 volum_slider=ttk.Scale(volum_frame, from_=1, to=0, orient=VERTICAL, length=286, value=0.5, command=volume)
