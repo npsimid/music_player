@@ -44,7 +44,7 @@ root.config(bg="#228B22")
 # initierea pachetului mixel pentur lucru cu muzica
 mixer.init()
 
-# crearea functiei de determinare a timpului actual al cantecului si a lungimii lui
+# crearea functiei de determinare a timpului actual al cantecului si a lungimii acestuia
 def play_time():
     """
     Functia de determinare a timpului actual al cantecului si a lungimii lui
@@ -72,7 +72,7 @@ def play_time():
         start_bar_label.config(text=conv_lung_song)
         # se afiseaza lungimea cantecului in labelul corespunzator
         stop_bar_label.config(text=conv_lung_song)
-        # se verifica daca este ultimul cantec din lista si daca ete dezactivat regimurile de repetare si amestecare
+        # se verifica daca este ultimul cantec din lista si daca sunt dezactivate regimurile de repetare si amestecare
         if cantec_list.curselection()[0]+1==cantec_list.size() and repeat_var == False and random_var==False:
             # se opreste muzica
             stop_song()
@@ -104,6 +104,7 @@ def play_time():
         music_bar.config(value=next_time)
     # actualizarea timpului
     status_bar.after(1000, play_time)
+
 # crearea functiei de adaugare a unui cantec in playlist
 def add_song():
     """
@@ -175,9 +176,10 @@ def add_songs():
         # se configuraza scrollbarul sa urmareasca lungimea playlistului
         scrollbar.config(command=cantec_list.yview)
 
+# crearea functiei de stergere a unui cantec din playlist
 def del_song():
     """
-    Functia de incarcarea a unui cantec in playlist
+    Functia de stergere a unui cantec din playlist
     """
     # oprirea cantecului selecta
     stop_song()
@@ -196,9 +198,10 @@ def del_song():
         # se plaseaza playlistul pe 3 coloane
         cantec_list.grid(row=4, column=0, columnspan=3, pady=10, sticky=E)
 
+# crearea unui functii de stergere a tuturor cantecelor din playlist
 def del_songs():
     """
-    Functia de incarcarea a unui cantec in playlist
+    Functia de stergere a tuturor cantecelor din playlist
     """
     # oprirea cantecului care canta la moment
     stop_song()
@@ -301,9 +304,11 @@ def pause_song():
         mixer.music.pause()
         # se specifica ca cantecul e pe pauza
         paused = True
+
 # se creaza o variabila globala care va specifica regimul random
 global num_random
 num_random= False
+
 # crearea functiei de trecere la urmatorul cantec
 def next_song():
     """
@@ -435,9 +440,10 @@ def bar_song(x):
     #pornirea cantecului
     mixer.music.play(loops=0, start=int(music_bar.get()))
 
+# crearea functiei de reglare a volumului si de afisare a imaginii corespunzatoare nivelului
 def volume(x):
     """
-    Functia de deplasare a barei volumului
+    Functia de reglare a volumului si de afisare a imaginii corespunzatoare nivelului
     """
     # seteaza reglarea volumului de la bara
     mixer.music.set_volume(volum_slider.get())
@@ -467,10 +473,12 @@ def volume(x):
         volum_meter.config(image=vol9)
     elif int(volum_curent) > 99:
         volum_meter.config(image=vol10)
+
 # se creaza o variabila globala care va monitoriza regimul random
 global random_var
 random_var=False
 
+# crearea functiei de stabilirea a regimului random
 def random_song():
     """
         Functia de stabilirea a regimului random
@@ -493,6 +501,7 @@ def random_song():
 global repeat_var
 repeat_var=False
 
+# crearea functiei de stabilirea a regimului repeat
 def repeat_song():
     """
         Functia de stabilirea a regimului repeat
@@ -516,11 +525,12 @@ master_frame=Frame(root, bg="#228B22")
 #fixarea cadrului de baza
 master_frame.pack()
 
+# crearea unui scrollbar pentru playlist
 scrollbar = Scrollbar(master_frame)
 
-# crearea cadrului pentru playlist
+# crearea unui listbox pentru playlist
 cantec_list=tk.Listbox(master_frame, width=60, bg="#9ACD32", fg="#0000FF", selectbackground='#B22222', activestyle=None)
-#fixarea cadrului cu playlist in fereastra
+#fixarea playlist-ului in fereastra
 cantec_list.grid(row=4, column=0, columnspan=3, pady=10, sticky=E)
 
 # definirea imaginilor pentru volum meter
