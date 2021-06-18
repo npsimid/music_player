@@ -7,21 +7,7 @@ from mutagen.mp3 import MP3
 import tkinter.ttk as ttk
 import sys, os
 from random import randint
-
-# Crearea unei functii de blocare a printarii in consola (pentru a exclude mesajele de la pygame)
-def blockPrint():
-    sys.stdout = open(os.devnull, 'w')
-
-# Crearea unei functii de deblocare a printarii in consola (dupa ce s-a importat pygame)
-def enablePrint():
-    sys.stdout = sys.__stdout__
-
-# apelarea functie de blocare a printarii
-blockPrint()
-# Importul modulului mixer din biblioteca pygame
 from pygame import mixer
-#apelarea functiei de deblocare a printarii
-enablePrint()
 
 # crearea ferestrei root
 root=tk.Tk()
