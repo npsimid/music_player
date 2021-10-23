@@ -7,7 +7,21 @@ from mutagen.mp3 import MP3
 import tkinter.ttk as ttk
 import sys, os
 from random import randint
+
+# Crearea unei functii de blocare a printarii in consola (pentru a exclude mesajele de la pygame)
+def blockPrint():
+    sys.stdout = open(os.devnull, 'w')
+
+# Crearea unei functii de deblocare a printarii in consola (dupa ce s-a importat pygame)
+def enablePrint():
+    sys.stdout = sys.__stdout__
+
+# apelarea functie de blocare a printarii
+blockPrint()
+# Importul modulului mixer din biblioteca pygame
 from pygame import mixer
+#apelarea functiei de deblocare a printarii
+enablePrint()
 
 # crearea ferestrei root
 root=tk.Tk()
@@ -41,8 +55,15 @@ def play_time():
     timpul_curent=mixer.music.get_pos()/1000
     # determinare cantecului activ
     song = cantec_list.get(ACTIVE)
-    # adaugarea intregului directoriu catre cantec activ
-    song = f'{path}{song}.mp3'
+    # se trece prin lista cu directoare
+    for i in path_list:
+        #se verifica directoriul in care se afla cantecul
+        if os.path.isfile(f'{i}{song}.mp3'):
+            # adaugarea intregului directoriu catre cantec activ
+            song = f'{i}{song}.mp3'
+            break
+        else:
+            continue
     # incarcare cantecului cu mutagen
     song_mut=MP3(song)
     # determinarea lungimii cantecului in secunde
@@ -91,6 +112,9 @@ def play_time():
     # actualizarea timpului
     status_bar.after(1000, play_time)
 
+# se creaza o lista ce va contine directoarele de unde au fost incarcate cantecele
+global path_list
+path_list=[]
 # crearea functiei de adaugare a unui cantec in playlist
 def add_song():
     """
@@ -98,12 +122,14 @@ def add_song():
     """
     # adaugarea cantecelor prin deschiderea directoriului
     songs=filedialog.askopenfilename(initialdir="Music", title='Adaugare cantece', filetypes=(('mp3 Files' , '*.mp3'),))
+
     # se creaza o lista in urma divizarii directorului dupa simbolul /
     lista = songs.split("/")
     # se creaza o variabila globala care va reprezenta calea catre folderul cu cantece
     global path
     # se creaza calea din uniunea cu ajutorul simbolului / a tuturor elemtelor liste exceptandul pe ultimul
     path="/".join(lista[0:len(lista)-1])+"/"
+    path_list.append(path)
     # se creaza denumirea cantecului stergand calea si extensia
     songs1 = songs.replace(path, '').replace(".mp3", '')
     # fixarea cantecelor in lista cu cantece
@@ -129,7 +155,7 @@ def add_songs():
     Functia de incarcarea mai multor cantece in playlist
     """
     # adaugarea cantecelor prin deschiderea directoriului
-    songs=filedialog.askopenfilenames(initialdir="Music", title='Adaugare cantece', filetypes=(('mp3 Files' , '*.mp3'),))
+    songs=filedialog.askopenfilenames(initialdir="/", title='Adaugare cantece', filetypes=(('mp3 Files' , '*.mp3'),))
     # se selecteaza primul cantec din lista de cantece
     song_0 = songs[0]
     # se creaza o lista in urma divizarii directorului dupa simbolul /
@@ -138,6 +164,7 @@ def add_songs():
     global path
     # se creaza calea din uniunea cu ajutorul simbolului / a tuturor elemtelor liste exceptandul pe ultimul
     path="/".join(lista[0:len(lista)-1])+"/"
+    path_list.append(path)
     # se formeaza o bucla cu care se trece prin lista de cantece
     for song in songs:
         # selectarea denumirii cantecului din directoriu cartre acesta
@@ -229,8 +256,15 @@ def play_song():
 
     # alegerea cantecului selectat
     song=cantec_list.get(ACTIVE)
-    # adaugarea intregului directoriu catre cantec
-    song = f'{path}{song}.mp3'
+    # se trece prin lista cu directoare
+    for i in path_list:
+        # se verifica directoriul in care se afla cantecul
+        if os.path.isfile(f'{i}{song}.mp3'):
+            # adaugarea intregului directoriu catre cantec activ
+            song = f'{i}{song}.mp3'
+            break
+        else:
+            continue
     # incarcarea cantelului
     mixer.music.load(song)
     #pornirea cantecului
@@ -337,8 +371,15 @@ def next_song():
         next_song=0
     # determinare cantecului de pe pozitia urmatoare
     song = cantec_list.get(next_song)
-    # adaugarea intregului directoriu catre cantec de pe pozitia urmatoare
-    song = f'{path}{song}.mp3'
+    # se trece prin lista cu directoare
+    for i in path_list:
+        # se verifica directoriul in care se afla cantecul
+        if os.path.isfile(f'{i}{song}.mp3'):
+            # adaugarea intregului directoriu catre cantec activ
+            song = f'{i}{song}.mp3'
+            break
+        else:
+            continue
     # incarcarea cantelului de pe pozitia urmatoare
     mixer.music.load(song)
     # pornirea cantecului de pe pozitia urmatoare
@@ -399,8 +440,15 @@ def previous_song():
         prev_song=cantec_list.size()-1
     # determinare cantecului de pe pozitia urmatoare
     song = cantec_list.get(prev_song)
-    # adaugarea intregului directoriu catre cantec de pe pozitia urmatoare
-    song = f'{path}{song}.mp3'
+    # se trece prin lista cu directoare
+    for i in path_list:
+        # se verifica directoriul in care se afla cantecul
+        if os.path.isfile(f'{i}{song}.mp3'):
+            # adaugarea intregului directoriu catre cantec activ
+            song = f'{i}{song}.mp3'
+            break
+        else:
+            continue
     # incarcarea cantelului de pe pozitia urmatoare
     mixer.music.load(song)
     # pornirea cantecului de pe pozitia urmatoare
@@ -419,8 +467,15 @@ def bar_song(x):
     """
     # alegerea cantecului selectat
     song=cantec_list.get(ACTIVE)
-    # adaugarea intregului directoriu catre cantec
-    song = f'{path}{song}.mp3'
+    # se trece prin lista cu directoare
+    for i in path_list:
+        # se verifica directoriul in care se afla cantecul
+        if os.path.isfile(f'{i}{song}.mp3'):
+            # adaugarea intregului directoriu catre cantec activ
+            song = f'{i}{song}.mp3'
+            break
+        else:
+            continue
     # incarcarea cantelului
     mixer.music.load(song)
     #pornirea cantecului
